@@ -634,8 +634,30 @@ compressBtn.addEventListener('click', async () => {
     item.progress = 30;
     renderFileList();
 
-    const fmt = outputFormat === 'original' ? item.file.type : outputFormat;
-    const blob = await compressImage(item.file, quality, fmt);
+    let fmt = outputFormat === 'original' ? item.file.type : outputFormat;
+
+    // PNG 用 Canvas 重编码无效，原格式模式下自动尝试 WebP
+    const isPng = item.file.type === 'image/png';
+    if (isPng && outputFormat === 'original') {
+      fmt = 'image/webp';
+    }
+
+    let blob = await compressImage(item.file, quality, fmt);
+
+    // 如果 WebP 仍然比原图大，尝试 JPEG
+    if (blob.size >= item.file.size && fmt === 'image/webp') {
+      const jpgBlob = await compressImage(item.file, quality, 'image/jpeg');
+      if (jpgBlob.size < blob.size) {
+        blob = jpgBlob;
+        fmt = 'image/jpeg';
+      }
+    }
+
+    // 最终保护：如果压缩后比原图大，直接用原文件
+    if (blob.size >= item.file.size) {
+      blob = item.file;
+      fmt = item.file.type;
+    }
 
     item.compressing = false;
     item.compressed = true;
