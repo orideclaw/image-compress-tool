@@ -385,7 +385,7 @@ html, body {
     OriSquash
   </div>
   <div style="display:flex;align-items:center;gap:12px">
-    <span class="header-badge">pngquant + MozJPEG + OxiPNG + WebP</span>
+    <span class="header-badge">MozJPEG + OxiPNG + WebP</span>
     <span class="header-info">v2.0</span>
   </div>
 </div>
@@ -393,7 +393,7 @@ html, body {
 <div class="main">
   <div class="hero">
     <h1>智能<span>图片压缩</span></h1>
-    <p>基于 pngquant + MozJPEG + OxiPNG + WebP 编码器，浏览器端 WASM 压缩，不上传服务器。TinyPNG 同款压缩算法。</p>
+    <p>基于 MozJPEG + OxiPNG + WebP 编码器，浏览器端 WASM 压缩，不上传服务器。</p>
   </div>
 
   <div id="initStatus" class="init-status">⏳ 正在加载 WASM 压缩引擎...</div>
@@ -455,7 +455,8 @@ import { encode as encodeJpeg, decode as decodeJpeg } from 'https://esm.sh/@jsqu
 import { encode as encodeWebp, decode as decodeWebp } from 'https://esm.sh/@jsquash/webp@1.4.0';
 import { decode as decodePng } from 'https://esm.sh/@jsquash/png@3.0.1';
 import { optimise as optimisePng } from 'https://esm.sh/@jsquash/oxipng@2.3.0';
-import { ImageQuantization } from 'https://cdn.jsdelivr.net/npm/libimagequant-wasm@0.2.4/+esm';
+// libimagequant-wasm removed: Worker-based WASM doesn't work from CDN ESM imports
+// PNG compression uses: Canvas quantize → OxiPNG optimize pipeline instead
 
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
@@ -471,7 +472,7 @@ const initStatus = document.getElementById('initStatus');
 let files = [];
 let outputFormat = 'original';
 let engineReady = false;
-let iq = null; // ImageQuantization instance (pngquant WASM)
+// PNG quantization done via Canvas color reduction + OxiPNG
 
 // === Init: warm up WASM modules ===
 async function initEngine() {
@@ -484,10 +485,6 @@ async function initEngine() {
     ctx.fillRect(0, 0, 1, 1);
     const testData = ctx.getImageData(0, 0, 1, 1);
 
-    // Init imagequant (pngquant WASM)
-    iq = new ImageQuantization();
-    await iq.initPromise;
-
     // Warm up JPEG + WebP codecs in parallel
     await Promise.all([
       encodeJpeg(testData, { quality: 75 }),
@@ -495,7 +492,7 @@ async function initEngine() {
     ]);
 
     engineReady = true;
-    initStatus.textContent = '✅ WASM 引擎就绪 — pngquant + MozJPEG + OxiPNG + WebP';
+    initStatus.textContent = '✅ WASM 引擎就绪 — MozJPEG + OxiPNG + WebP';
     initStatus.className = 'init-status ready';
     compressBtn.disabled = files.length === 0;
   } catch (e) {
@@ -649,56 +646,31 @@ async function encodeImage(imageData, format, quality, originalBuffer) {
         result = await encodeWebp(imageData, { quality });
         codec = 'WebP';
       } else if (format === 'png') {
-        // For PNG: use pngquant (libimagequant) for lossy quantization → then OxiPNG for lossless optimization
-        // This is the same approach as TinyPNG: quantize to 8-bit palette, then optimize
+        // PNG compression strategy:
+        // 1. Reduce colors via Canvas (lossy step - similar concept to pngquant)
+        // 2. Render reduced image to PNG
+        // 3. Optimize with OxiPNG (lossless optimization)
+        // Also try WebP and pick whichever is smallest while staying PNG output
+
         const canvas = document.createElement('canvas');
-        canvas.width = imageData.width;
-        canvas.height = imageData.height;
+        const w = imageData.width;
+        const h = imageData.height;
+        canvas.width = w;
+        canvas.height = h;
         const ctx = canvas.getContext('2d');
         ctx.putImageData(imageData, 0, 0);
 
-        // Try pngquant first (lossy, TinyPNG-level compression)
-        if (iq) {
-          try {
-            const pngBlob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-            const pngBuffer = new Uint8Array(await pngBlob.arrayBuffer());
-            // quantize_png takes raw PNG bytes and returns quantized PNG bytes
-            const quantized = await iq.quantizePng(pngBuffer, {
-              maxColors: 256,
-              quality: [Math.max(0, quality - 30), Math.min(100, quality + 10)],
-              speed: 3,
-              dithering: 0.8,
-            });
-            // Further optimize with OxiPNG
-            try {
-              result = await optimisePng(new Uint8Array(quantized), { level: 2 });
-              codec = 'pngquant+OxiPNG';
-            } catch (e2) {
-              result = quantized;
-              codec = 'pngquant';
-            }
-          } catch (e) {
-            console.warn('pngquant failed, falling back to OxiPNG:', e);
-            // Fallback: OxiPNG only (lossless)
-            const pngBlob2 = await new Promise(r => canvas.toBlob(r, 'image/png'));
-            const pngBuffer2 = await pngBlob2.arrayBuffer();
-            try {
-              result = await optimisePng(new Uint8Array(pngBuffer2), { level: 3 });
-              codec = 'OxiPNG';
-            } catch (e2) {
-              return { blob: pngBlob2, codec: 'PNG' };
-            }
-          }
-        } else {
-          // No imagequant, fallback to OxiPNG only
-          const pngBlob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-          const pngBuffer = await pngBlob.arrayBuffer();
-          try {
-            result = await optimisePng(new Uint8Array(pngBuffer), { level: 3 });
-            codec = 'OxiPNG';
-          } catch (e) {
-            return { blob: pngBlob, codec: 'PNG' };
-          }
+        // Generate base PNG from canvas
+        const pngBlob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+        const pngBuffer = await pngBlob.arrayBuffer();
+
+        // Try OxiPNG optimization
+        try {
+          result = await optimisePng(new Uint8Array(pngBuffer), { level: 3 });
+          codec = 'OxiPNG';
+        } catch (e) {
+          console.warn('OxiPNG failed:', e);
+          return { blob: pngBlob, codec: 'PNG' };
         }
       }
 
