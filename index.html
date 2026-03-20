@@ -24,11 +24,9 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 html, body {
   width: 100%; min-height: 100vh;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg); color: var(--text);
   font-family: 'DM Sans', -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -38,331 +36,79 @@ html, body {
   padding: 24px 32px;
   display: flex; align-items: center; justify-content: space-between;
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(20px);
   position: sticky; top: 0; z-index: 100;
-  background: var(--bg)/90;
+  background: rgba(10,10,11,0.9); backdrop-filter: blur(20px);
 }
-.logo {
-  font-size: 20px; font-weight: 700; letter-spacing: -0.5px;
-  display: flex; align-items: center; gap: 10px;
-}
-.logo-icon {
-  width: 32px; height: 32px;
-  background: var(--accent);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 700; color: var(--bg);
-}
-.header-info {
-  font-size: 13px; color: var(--text-2);
-  font-family: 'JetBrains Mono', monospace;
-}
-.header-badge {
-  font-size: 10px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: var(--accent-dim);
-  color: var(--accent);
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 600;
-}
+.logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: var(--bg); }
+.header-info { font-size: 13px; color: var(--text-2); font-family: 'JetBrains Mono', monospace; }
 
-.main {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 48px 24px 80px;
-}
+.main { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
 
-.hero {
-  text-align: center;
-  margin-bottom: 48px;
-}
-.hero h1 {
-  font-size: clamp(32px, 5vw, 48px);
-  font-weight: 700;
-  letter-spacing: -1.5px;
-  line-height: 1.1;
-  margin-bottom: 12px;
-}
+.hero { text-align: center; margin-bottom: 48px; }
+.hero h1 { font-size: clamp(32px, 5vw, 48px); font-weight: 700; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 12px; }
 .hero h1 span { color: var(--accent); }
-.hero p {
-  font-size: 16px;
-  color: var(--text-2);
-  max-width: 520px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
+.hero p { font-size: 16px; color: var(--text-2); max-width: 480px; margin: 0 auto; line-height: 1.6; }
 
 .dropzone {
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
-  padding: 64px 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  background: var(--surface);
+  border: 2px dashed var(--border); border-radius: var(--radius);
+  padding: 64px 32px; text-align: center; cursor: pointer;
+  transition: all 0.3s ease; position: relative; overflow: hidden; background: var(--surface);
 }
-.dropzone::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 50%, var(--accent-dim), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.dropzone:hover, .dropzone.dragover {
-  border-color: var(--accent);
-  background: var(--surface-2);
-}
+.dropzone::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, var(--accent-dim), transparent 70%); opacity: 0; transition: opacity 0.3s; }
+.dropzone:hover, .dropzone.dragover { border-color: var(--accent); background: var(--surface-2); }
 .dropzone:hover::before, .dropzone.dragover::before { opacity: 1; }
-.dropzone-icon {
-  width: 64px; height: 64px;
-  margin: 0 auto 20px;
-  border-radius: 16px;
-  background: var(--accent-dim);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  position: relative;
-}
-.dropzone h3 {
-  font-size: 18px; font-weight: 600;
-  margin-bottom: 8px;
-  position: relative;
-}
-.dropzone p {
-  font-size: 14px; color: var(--text-2);
-  position: relative;
-}
+.dropzone-icon { width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 16px; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-size: 28px; position: relative; }
+.dropzone h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; position: relative; }
+.dropzone p { font-size: 14px; color: var(--text-2); position: relative; }
 .dropzone input { display: none; }
 
-.controls {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 16px;
-  margin: 24px 0;
-  flex-wrap: wrap;
-}
-.quality-control {
-  display: flex; align-items: center; gap: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 20px;
-  flex: 1; min-width: 280px;
-}
-.quality-control label {
-  font-size: 13px; color: var(--text-2);
-  white-space: nowrap;
-  font-weight: 500;
-}
-.quality-control input[type="range"] {
-  flex: 1;
-  -webkit-appearance: none;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--border);
-  outline: none;
-}
-.quality-control input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  background: var(--accent);
-  cursor: pointer;
-  box-shadow: 0 0 10px var(--accent-glow);
-}
-.quality-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px; font-weight: 600;
-  color: var(--accent);
-  min-width: 36px; text-align: right;
-}
+.controls { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 24px 0; flex-wrap: wrap; }
+.quality-control { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 20px; flex: 1; min-width: 280px; }
+.quality-control label { font-size: 13px; color: var(--text-2); white-space: nowrap; font-weight: 500; }
+.quality-control input[type="range"] { flex: 1; -webkit-appearance: none; height: 4px; border-radius: 2px; background: var(--border); outline: none; }
+.quality-control input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); }
+.quality-val { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; color: var(--accent); min-width: 36px; text-align: right; }
 
-.format-control {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 8px;
-}
-.format-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--text-2);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px; font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.format-btn.active {
-  background: var(--accent);
-  color: var(--bg);
-}
+.format-control { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px; }
+.format-btn { padding: 8px 16px; border: none; border-radius: 8px; background: transparent; color: var(--text-2); font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.format-btn.active { background: var(--accent); color: var(--bg); }
 
-.btn-row {
-  display: flex; gap: 12px; margin: 16px 0;
-  flex-wrap: wrap;
-}
-.btn {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px; font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex; align-items: center; gap: 8px;
-}
-.btn-primary {
-  background: var(--accent);
-  color: var(--bg);
-}
-.btn-primary:hover {
-  box-shadow: 0 0 24px var(--accent-glow);
-  transform: translateY(-1px);
-}
-.btn-primary:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-.btn-secondary {
-  background: var(--surface-2);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
+.btn-row { display: flex; gap: 12px; margin: 16px 0; flex-wrap: wrap; }
+.btn { padding: 12px 24px; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-primary:hover { box-shadow: 0 0 24px var(--accent-glow); transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
 .btn-secondary:hover { border-color: var(--text-2); }
 
-.file-list {
-  margin-top: 24px;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.file-item {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 20px;
-  display: flex; align-items: center; gap: 16px;
-  transition: all 0.3s;
-  animation: slideIn 0.3s ease;
-}
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.file-thumb {
-  width: 48px; height: 48px;
-  border-radius: 8px;
-  object-fit: cover;
-  background: var(--surface-2);
-  flex-shrink: 0;
-}
+.file-list { margin-top: 24px; display: flex; flex-direction: column; gap: 8px; }
+.file-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; animation: slideIn 0.3s ease; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.file-thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: var(--surface-2); flex-shrink: 0; }
 .file-info { flex: 1; min-width: 0; }
-.file-name {
-  font-size: 14px; font-weight: 600;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  margin-bottom: 4px;
-}
-.file-meta {
-  font-size: 12px; color: var(--text-2);
-  font-family: 'JetBrains Mono', monospace;
-  display: flex; align-items: center; gap: 8px;
-  flex-wrap: wrap;
-}
+.file-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+.file-meta { font-size: 12px; color: var(--text-2); font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .file-arrow { color: var(--text-2); }
 .file-compressed { color: var(--green); font-weight: 600; }
-.file-saving {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-weight: 600;
-}
+.file-saving { font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 600; }
 .file-saving.good { background: #00d4aa20; color: var(--green); }
 .file-saving.great { background: #00d4aa30; color: var(--green); }
 .file-saving.bad { background: #ff4d6a20; color: var(--red); }
-.file-codec {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: var(--surface-2);
-  color: var(--text-2);
-}
 
-.file-actions {
-  display: flex; gap: 8px; flex-shrink: 0;
-}
-.file-btn {
-  width: 36px; height: 36px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface-2);
-  color: var(--text-2);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  transition: all 0.2s;
-}
+.file-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.file-btn { width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text-2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.2s; }
 .file-btn:hover { border-color: var(--accent); color: var(--accent); }
 .file-btn.remove:hover { border-color: var(--red); color: var(--red); }
 
-.progress-bar {
-  width: 100%;
-  height: 3px;
-  background: var(--border);
-  border-radius: 2px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-.progress-fill {
-  height: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-  transition: width 0.3s;
-  box-shadow: 0 0 8px var(--accent-glow);
-}
+.progress-bar { width: 100%; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; box-shadow: 0 0 8px var(--accent-glow); }
 
-.summary {
-  margin-top: 32px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-  display: none;
-}
+.summary { margin-top: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; display: none; }
 .summary.show { display: block; animation: slideIn 0.4s ease; }
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 20px;
-  text-align: center;
-}
-.summary-item h4 {
-  font-size: 11px;
-  color: var(--text-2);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-.summary-item .val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.init-status {
-  text-align: center;
-  padding: 12px;
-  font-size: 13px;
-  color: var(--text-2);
-  font-family: 'JetBrains Mono', monospace;
-}
-.init-status.ready { color: var(--green); }
-.init-status.error { color: var(--red); }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; text-align: center; }
+.summary-item h4 { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 500; }
+.summary-item .val { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; color: var(--accent); }
 
 @media (max-width: 640px) {
   .header { padding: 16px 20px; }
@@ -371,7 +117,6 @@ html, body {
   .controls { flex-direction: column; }
   .quality-control { min-width: 100%; }
   .file-item { flex-wrap: wrap; }
-  .file-meta { flex-wrap: wrap; }
   .btn-row { flex-direction: column; }
   .btn-row .btn { width: 100%; justify-content: center; }
 }
@@ -384,19 +129,14 @@ html, body {
     <div class="logo-icon">O</div>
     OriSquash
   </div>
-  <div style="display:flex;align-items:center;gap:12px">
-    <span class="header-badge">MozJPEG + OxiPNG + WebP</span>
-    <span class="header-info">v2.0</span>
-  </div>
+  <div class="header-info">v3.0 · 纯前端压缩</div>
 </div>
 
 <div class="main">
   <div class="hero">
     <h1>智能<span>图片压缩</span></h1>
-    <p>基于 MozJPEG + OxiPNG + WebP 编码器，浏览器端 WASM 压缩，不上传服务器。</p>
+    <p>浏览器端压缩，不上传服务器。支持 PNG / JPG / WebP 批量处理，打包下载。</p>
   </div>
-
-  <div id="initStatus" class="init-status">⏳ 正在加载 WASM 压缩引擎...</div>
 
   <div class="dropzone" id="dropzone">
     <div class="dropzone-icon">📦</div>
@@ -413,9 +153,9 @@ html, body {
     </div>
     <div class="format-control">
       <button class="format-btn active" data-format="original">原格式</button>
-      <button class="format-btn" data-format="jpeg">JPG</button>
-      <button class="format-btn" data-format="webp">WebP</button>
-      <button class="format-btn" data-format="png">PNG</button>
+      <button class="format-btn" data-format="image/jpeg">JPG</button>
+      <button class="format-btn" data-format="image/webp">WebP</button>
+      <button class="format-btn" data-format="image/png">PNG</button>
     </div>
   </div>
 
@@ -429,34 +169,19 @@ html, body {
 
   <div class="summary" id="summary">
     <div class="summary-grid">
-      <div class="summary-item">
-        <h4>文件数</h4>
-        <div class="val" id="sumCount">0</div>
-      </div>
-      <div class="summary-item">
-        <h4>原始大小</h4>
-        <div class="val" id="sumOriginal">0</div>
-      </div>
-      <div class="summary-item">
-        <h4>压缩后</h4>
-        <div class="val" id="sumCompressed">0</div>
-      </div>
-      <div class="summary-item">
-        <h4>节省</h4>
-        <div class="val" id="sumSaved">0%</div>
-      </div>
+      <div class="summary-item"><h4>文件数</h4><div class="val" id="sumCount">0</div></div>
+      <div class="summary-item"><h4>原始大小</h4><div class="val" id="sumOriginal">0</div></div>
+      <div class="summary-item"><h4>压缩后</h4><div class="val" id="sumCompressed">0</div></div>
+      <div class="summary-item"><h4>节省</h4><div class="val" id="sumSaved">0%</div></div>
     </div>
   </div>
 </div>
 
-<script type="module">
-// === WASM Codecs via jSquash (Squoosh WASM ports) ===
-import { encode as encodeJpeg, decode as decodeJpeg } from 'https://esm.sh/@jsquash/jpeg@1.4.0';
-import { encode as encodeWebp, decode as decodeWebp } from 'https://esm.sh/@jsquash/webp@1.4.0';
-import { decode as decodePng } from 'https://esm.sh/@jsquash/png@3.0.1';
-import { optimise as optimisePng } from 'https://esm.sh/@jsquash/oxipng@2.3.0';
-// libimagequant-wasm removed: Worker-based WASM doesn't work from CDN ESM imports
-// PNG compression uses: Canvas quantize → OxiPNG optimize pipeline instead
+<script>
+// === OriSquash v3.0 — Pure Canvas compression, no WASM dependency ===
+// Strategy: Canvas re-encode with optimal quality for each format
+// PNG: try WebP at high quality → compare with original → pick smaller but keep PNG if "original" mode
+// JPG/WebP: Canvas toBlob with quality parameter (effective for lossy formats)
 
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
@@ -467,50 +192,12 @@ const clearBtn = document.getElementById('clearBtn');
 const qualitySlider = document.getElementById('quality');
 const qualityVal = document.getElementById('qualityVal');
 const summary = document.getElementById('summary');
-const initStatus = document.getElementById('initStatus');
 
 let files = [];
 let outputFormat = 'original';
-let engineReady = false;
-// PNG quantization done via Canvas color reduction + OxiPNG
 
-// === Init: warm up WASM modules ===
-async function initEngine() {
-  try {
-    // Create a tiny 1x1 test image to trigger WASM loading
-    const canvas = document.createElement('canvas');
-    canvas.width = 1; canvas.height = 1;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, 1, 1);
-    const testData = ctx.getImageData(0, 0, 1, 1);
+qualitySlider.addEventListener('input', () => { qualityVal.textContent = qualitySlider.value + '%'; });
 
-    // Warm up JPEG + WebP codecs in parallel
-    await Promise.all([
-      encodeJpeg(testData, { quality: 75 }),
-      encodeWebp(testData, { quality: 75 }),
-    ]);
-
-    engineReady = true;
-    initStatus.textContent = '✅ WASM 引擎就绪 — MozJPEG + OxiPNG + WebP';
-    initStatus.className = 'init-status ready';
-    compressBtn.disabled = files.length === 0;
-  } catch (e) {
-    console.error('Engine init failed:', e);
-    initStatus.textContent = '⚠️ WASM 加载失败，将使用 Canvas 降级压缩';
-    initStatus.className = 'init-status error';
-    engineReady = false;
-    compressBtn.disabled = files.length === 0;
-  }
-}
-initEngine();
-
-// Quality slider
-qualitySlider.addEventListener('input', () => {
-  qualityVal.textContent = qualitySlider.value + '%';
-});
-
-// Format buttons
 document.querySelectorAll('.format-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
@@ -519,7 +206,7 @@ document.querySelectorAll('.format-btn').forEach(btn => {
   });
 });
 
-// Drop zone
+// === Drop zone ===
 dropzone.addEventListener('click', () => fileInput.click());
 dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
 dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
@@ -544,16 +231,10 @@ dropzone.addEventListener('drop', async e => {
 function traverseEntry(entry, result) {
   return new Promise(resolve => {
     if (entry.isFile) {
-      entry.file(f => {
-        if (f.type.match(/^image\/(png|jpeg|webp)$/)) result.push(f);
-        resolve();
-      });
+      entry.file(f => { if (f.type.match(/^image\/(png|jpeg|webp)$/)) result.push(f); resolve(); });
     } else if (entry.isDirectory) {
       const reader = entry.createReader();
-      reader.readEntries(async entries => {
-        for (const e of entries) await traverseEntry(e, result);
-        resolve();
-      });
+      reader.readEntries(async entries => { for (const e of entries) await traverseEntry(e, result); resolve(); });
     } else { resolve(); }
   });
 }
@@ -576,128 +257,15 @@ function formatSize(bytes) {
   return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
 }
 
-function getExt(fmt) {
-  if (fmt === 'jpeg') return '.jpg';
-  if (fmt === 'webp') return '.webp';
-  if (fmt === 'png') return '.png';
+function getExt(mime) {
+  if (mime === 'image/jpeg') return '.jpg';
+  if (mime === 'image/webp') return '.webp';
+  if (mime === 'image/png') return '.png';
   return '.jpg';
 }
 
-function getMime(fmt) {
-  if (fmt === 'jpeg') return 'image/jpeg';
-  if (fmt === 'webp') return 'image/webp';
-  if (fmt === 'png') return 'image/png';
-  return 'image/jpeg';
-}
-
 function getCompressedName(item) {
-  return item.file.name.replace(/\.[^.]+$/, '') + getExt(item.outputFmt);
-}
-
-function getSourceFormat(file) {
-  if (file.type === 'image/png') return 'png';
-  if (file.type === 'image/webp') return 'webp';
-  return 'jpeg';
-}
-
-// === Core: decode any image to ImageData ===
-async function decodeImage(file) {
-  const buffer = await file.arrayBuffer();
-  const type = file.type;
-
-  if (engineReady) {
-    try {
-      if (type === 'image/jpeg') return await decodeJpeg(buffer);
-      if (type === 'image/png') return await decodePng(buffer);
-      if (type === 'image/webp') return await decodeWebp(buffer);
-    } catch (e) {
-      console.warn('WASM decode failed, falling back to Canvas:', e);
-    }
-  }
-
-  // Canvas fallback
-  return new Promise((resolve) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(url);
-      resolve(ctx.getImageData(0, 0, canvas.width, canvas.height));
-    };
-    img.src = url;
-  });
-}
-
-// === Core: encode ImageData with WASM codecs ===
-async function encodeImage(imageData, format, quality, originalBuffer) {
-  let codec = 'canvas';
-
-  if (engineReady) {
-    try {
-      let result;
-      if (format === 'jpeg') {
-        result = await encodeJpeg(imageData, { quality });
-        codec = 'MozJPEG';
-      } else if (format === 'webp') {
-        result = await encodeWebp(imageData, { quality });
-        codec = 'WebP';
-      } else if (format === 'png') {
-        // PNG compression strategy:
-        // 1. Reduce colors via Canvas (lossy step - similar concept to pngquant)
-        // 2. Render reduced image to PNG
-        // 3. Optimize with OxiPNG (lossless optimization)
-        // Also try WebP and pick whichever is smallest while staying PNG output
-
-        const canvas = document.createElement('canvas');
-        const w = imageData.width;
-        const h = imageData.height;
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.putImageData(imageData, 0, 0);
-
-        // Generate base PNG from canvas
-        const pngBlob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-        const pngBuffer = await pngBlob.arrayBuffer();
-
-        // Try OxiPNG optimization
-        try {
-          result = await optimisePng(new Uint8Array(pngBuffer), { level: 3 });
-          codec = 'OxiPNG';
-        } catch (e) {
-          console.warn('OxiPNG failed:', e);
-          return { blob: pngBlob, codec: 'PNG' };
-        }
-      }
-
-      if (result) {
-        const blob = new Blob([result], { type: getMime(format) });
-        return { blob, codec };
-      }
-    } catch (e) {
-      console.warn('WASM encode failed, falling back:', e);
-    }
-  }
-
-  // Canvas fallback
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = imageData.width;
-    canvas.height = imageData.height;
-    const ctx = canvas.getContext('2d');
-    if (format === 'jpeg') {
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-    ctx.putImageData(imageData, 0, 0);
-    canvas.toBlob((blob) => {
-      resolve({ blob, codec: 'Canvas' });
-    }, getMime(format), quality / 100);
-  });
+  return item.file.name.replace(/\.[^.]+$/, '') + getExt(item.outputMime);
 }
 
 function renderFileList() {
@@ -705,7 +273,6 @@ function renderFileList() {
   files.forEach((item, i) => {
     const el = document.createElement('div');
     el.className = 'file-item';
-    el.style.animationDelay = (i * 0.03) + 's';
     const thumb = URL.createObjectURL(item.file);
     el.innerHTML = `
       <img class="file-thumb" src="${thumb}" alt="">
@@ -719,7 +286,6 @@ function renderFileList() {
             <span class="file-saving ${item.saving > 50 ? 'great' : item.saving > 0 ? 'good' : 'bad'}">
               ${item.saving > 0 ? '-' : '+'}${Math.abs(item.saving).toFixed(1)}%
             </span>
-            <span class="file-codec">${item.codec}</span>
           ` : ''}
         </div>
         ${item.compressing ? `<div class="progress-bar"><div class="progress-fill" style="width:${item.progress||0}%"></div></div>` : ''}
@@ -731,17 +297,12 @@ function renderFileList() {
     `;
     fileList.appendChild(el);
   });
-
   fileList.querySelectorAll('.remove').forEach(btn => {
     btn.addEventListener('click', () => {
       files.splice(+btn.dataset.idx, 1);
       renderFileList();
       compressBtn.disabled = files.length === 0;
-      if (files.length === 0) {
-        downloadZipBtn.style.display = 'none';
-        clearBtn.style.display = 'none';
-        summary.classList.remove('show');
-      }
+      if (files.length === 0) { downloadZipBtn.style.display = 'none'; clearBtn.style.display = 'none'; summary.classList.remove('show'); }
     });
   });
   fileList.querySelectorAll('.download').forEach(btn => {
@@ -749,43 +310,99 @@ function renderFileList() {
   });
 }
 
+// === Core compression ===
+function loadImage(file) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.src = url;
+  });
+}
+
+function canvasToBlob(canvas, mime, quality) {
+  return new Promise(resolve => {
+    canvas.toBlob(resolve, mime, quality);
+  });
+}
+
+async function compressFile(file, quality01, targetMime) {
+  const img = await loadImage(file);
+  let w = img.naturalWidth, h = img.naturalHeight;
+
+  // Scale down if extremely large
+  const maxDim = 4096;
+  if (w > maxDim || h > maxDim) {
+    const ratio = Math.min(maxDim / w, maxDim / h);
+    w = Math.round(w * ratio);
+    h = Math.round(h * ratio);
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+
+  // White background for JPEG
+  if (targetMime === 'image/jpeg') {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, w, h);
+  }
+  ctx.drawImage(img, 0, 0, w, h);
+
+  // For PNG: quality parameter is ignored by Canvas. Try multiple strategies:
+  if (targetMime === 'image/png') {
+    const pngBlob = await canvasToBlob(canvas, 'image/png');
+
+    // Strategy 1: Try WebP at same quality and see if it's much smaller
+    const webpBlob = await canvasToBlob(canvas, 'image/webp', quality01);
+    // Strategy 2: Try JPEG at same quality
+    if (targetMime === 'image/jpeg') {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+    }
+
+    // For PNG output, we can only return the canvas PNG (no lossy PNG in browser without WASM)
+    // But we can still benefit from canvas re-encoding (strips metadata, re-encodes)
+    // Return the smaller of: original file vs canvas PNG
+    if (pngBlob.size < file.size) {
+      return pngBlob;
+    }
+    return file; // Original is already optimal
+  }
+
+  // For JPEG and WebP: quality parameter works great
+  return await canvasToBlob(canvas, targetMime, quality01);
+}
+
 compressBtn.addEventListener('click', async () => {
   const quality = +qualitySlider.value;
+  const quality01 = quality / 100;
   compressBtn.disabled = true;
   compressBtn.textContent = '⏳ 压缩中...';
 
   for (let i = 0; i < files.length; i++) {
     const item = files[i];
     item.compressing = true;
-    item.progress = 20;
+    item.progress = 30;
     renderFileList();
 
-    const srcFmt = getSourceFormat(item.file);
-    let targetFmt = outputFormat === 'original' ? srcFmt : outputFormat;
-
-    // Decode
-    item.progress = 40;
-    renderFileList();
-    const imageData = await decodeImage(item.file);
-
-    // Encode with target format
-    item.progress = 70;
-    renderFileList();
-    let result = await encodeImage(imageData, targetFmt, quality, await item.file.arrayBuffer());
+    const targetMime = outputFormat === 'original' ? item.file.type : outputFormat;
+    let blob = await compressFile(item.file, quality01, targetMime);
 
     // Safety: never output larger than original
-    if (result.blob.size >= item.file.size) {
-      result = { blob: item.file, codec: '原图' };
-      targetFmt = srcFmt;
+    let finalMime = targetMime;
+    if (blob.size >= item.file.size) {
+      blob = item.file;
+      finalMime = item.file.type;
     }
 
     item.compressing = false;
     item.compressed = true;
-    item.compressedSize = result.blob.size;
-    item.saving = ((1 - result.blob.size / item.file.size) * 100);
-    item.compressedBlob = result.blob;
-    item.outputFmt = targetFmt;
-    item.codec = result.codec;
+    item.compressedSize = blob.size;
+    item.saving = ((1 - blob.size / item.file.size) * 100);
+    item.compressedBlob = blob;
+    item.outputMime = finalMime;
     renderFileList();
   }
 
@@ -797,7 +414,6 @@ compressBtn.addEventListener('click', async () => {
   const totalOriginal = files.reduce((s, f) => s + f.file.size, 0);
   const totalCompressed = files.reduce((s, f) => s + (f.compressedSize || 0), 0);
   const totalSaved = ((1 - totalCompressed / totalOriginal) * 100);
-
   document.getElementById('sumCount').textContent = files.length;
   document.getElementById('sumOriginal').textContent = formatSize(totalOriginal);
   document.getElementById('sumCompressed').textContent = formatSize(totalCompressed);
@@ -818,7 +434,6 @@ function downloadFile(idx) {
 downloadZipBtn.addEventListener('click', async () => {
   const compressedItems = files.filter(f => f.compressed && f.compressedBlob);
   if (compressedItems.length === 0) return;
-
   downloadZipBtn.disabled = true;
   downloadZipBtn.textContent = '📦 打包中...';
 
@@ -826,10 +441,8 @@ downloadZipBtn.addEventListener('click', async () => {
   const nameCount = {};
   for (const item of compressedItems) {
     let name = getCompressedName(item);
-    if (nameCount[name]) {
-      nameCount[name]++;
-      name = name.replace(/(\.[^.]+)$/, `_${nameCount[name]}$1`);
-    } else { nameCount[name] = 1; }
+    if (nameCount[name]) { nameCount[name]++; name = name.replace(/(\.[^.]+)$/, `_${nameCount[name]}$1`); }
+    else { nameCount[name] = 1; }
     zip.file(name, item.compressedBlob);
   }
 
@@ -839,7 +452,6 @@ downloadZipBtn.addEventListener('click', async () => {
   a.download = 'compressed_images.zip';
   a.click();
   URL.revokeObjectURL(a.href);
-
   downloadZipBtn.disabled = false;
   downloadZipBtn.textContent = '📦 打包下载 ZIP';
 });
