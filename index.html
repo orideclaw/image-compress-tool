@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TinySquash · 图片压缩</title>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap');
 
@@ -198,6 +199,7 @@ html, body {
 
 .btn-row {
   display: flex; gap: 12px; margin: 16px 0;
+  flex-wrap: wrap;
 }
 .btn {
   padding: 12px 24px;
@@ -229,6 +231,20 @@ html, body {
   border: 1px solid var(--border);
 }
 .btn-secondary:hover { border-color: var(--text-2); }
+.btn-download-zip {
+  background: var(--accent);
+  color: var(--bg);
+}
+.btn-download-zip:hover {
+  box-shadow: 0 0 24px var(--accent-glow);
+  transform: translateY(-1px);
+}
+.btn-download-zip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 
 /* === FILE LIST === */
 .file-list {
@@ -352,6 +368,8 @@ html, body {
   .quality-control { min-width: 100%; }
   .file-item { flex-wrap: wrap; }
   .file-meta { flex-wrap: wrap; }
+  .btn-row { flex-direction: column; }
+  .btn-row .btn { width: 100%; justify-content: center; }
 }
 </style>
 </head>
@@ -362,7 +380,7 @@ html, body {
     <div class="logo-icon">T</div>
     TinySquash
   </div>
-  <div class="header-info">v1.0 · 纯前端压缩</div>
+  <div class="header-info">v1.1 · 纯前端压缩</div>
 </div>
 
 <div class="main">
@@ -374,7 +392,7 @@ html, body {
   <div class="dropzone" id="dropzone">
     <div class="dropzone-icon">📦</div>
     <h3>拖拽图片到这里，或点击上传</h3>
-    <p>支持 PNG / JPG / JPEG / WebP · 可批量上传</p>
+    <p>支持 PNG / JPG / JPEG / WebP · 可批量上传 · 支持文件夹</p>
     <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple>
   </div>
 
@@ -394,7 +412,7 @@ html, body {
 
   <div class="btn-row">
     <button class="btn btn-primary" id="compressBtn" disabled>⚡ 开始压缩</button>
-    <button class="btn btn-secondary" id="downloadAllBtn" style="display:none">⬇ 全部下载</button>
+    <button class="btn btn-download-zip" id="downloadZipBtn" style="display:none">📦 打包下载 ZIP</button>
     <button class="btn btn-secondary" id="clearBtn" style="display:none">✕ 清空</button>
   </div>
 
@@ -427,14 +445,13 @@ const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
 const fileList = document.getElementById('fileList');
 const compressBtn = document.getElementById('compressBtn');
-const downloadAllBtn = document.getElementById('downloadAllBtn');
+const downloadZipBtn = document.getElementById('downloadZipBtn');
 const clearBtn = document.getElementById('clearBtn');
 const qualitySlider = document.getElementById('quality');
 const qualityVal = document.getElementById('qualityVal');
 const summary = document.getElementById('summary');
 
 let files = [];
-let compressedFiles = [];
 let outputFormat = 'original';
 
 // Quality slider
@@ -451,21 +468,55 @@ document.querySelectorAll('.format-btn').forEach(btn => {
   });
 });
 
-// Drop zone
+// Drop zone — supports files and folders via drag & drop
 dropzone.addEventListener('click', () => fileInput.click());
 dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
 dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-dropzone.addEventListener('drop', e => {
+dropzone.addEventListener('drop', async e => {
   e.preventDefault();
   dropzone.classList.remove('dragover');
-  addFiles(e.dataTransfer.files);
+  // Try to read folder entries via DataTransferItem.webkitGetAsEntry()
+  const items = e.dataTransfer.items;
+  if (items && items.length > 0 && items[0].webkitGetAsEntry) {
+    const allFiles = [];
+    const promises = [];
+    for (const item of items) {
+      const entry = item.webkitGetAsEntry();
+      if (entry) promises.push(traverseEntry(entry, allFiles));
+    }
+    await Promise.all(promises);
+    addFiles(allFiles);
+  } else {
+    addFiles(Array.from(e.dataTransfer.files));
+  }
 });
-fileInput.addEventListener('change', () => { addFiles(fileInput.files); fileInput.value = ''; });
+
+function traverseEntry(entry, result) {
+  return new Promise(resolve => {
+    if (entry.isFile) {
+      entry.file(f => {
+        if (f.type.match(/^image\/(png|jpeg|webp)$/)) result.push(f);
+        resolve();
+      });
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      reader.readEntries(async entries => {
+        for (const e of entries) await traverseEntry(e, result);
+        resolve();
+      });
+    } else {
+      resolve();
+    }
+  });
+}
+
+fileInput.addEventListener('change', () => { addFiles(Array.from(fileInput.files)); fileInput.value = ''; });
 
 function addFiles(newFiles) {
   for (const f of newFiles) {
-    if (!f.type.match(/^image\/(png|jpeg|webp)$/)) continue;
-    files.push({ file: f, id: Date.now() + Math.random() });
+    if (f instanceof File && f.type.match(/^image\/(png|jpeg|webp)$/)) {
+      files.push({ file: f, id: Date.now() + Math.random() });
+    }
   }
   renderFileList();
   compressBtn.disabled = files.length === 0;
@@ -484,11 +535,16 @@ function getExt(mime) {
   return '.jpg';
 }
 
+function getCompressedName(item) {
+  return item.file.name.replace(/\.[^.]+$/, '') + '_compressed' + getExt(item.outputFormat);
+}
+
 function renderFileList() {
   fileList.innerHTML = '';
   files.forEach((item, i) => {
     const el = document.createElement('div');
     el.className = 'file-item';
+    el.style.animationDelay = (i * 0.03) + 's';
     const thumb = URL.createObjectURL(item.file);
     el.innerHTML = `
       <img class="file-thumb" src="${thumb}" alt="">
@@ -517,11 +573,10 @@ function renderFileList() {
   fileList.querySelectorAll('.remove').forEach(btn => {
     btn.addEventListener('click', () => {
       files.splice(+btn.dataset.idx, 1);
-      compressedFiles.splice(+btn.dataset.idx, 1);
       renderFileList();
       compressBtn.disabled = files.length === 0;
       if (files.length === 0) {
-        downloadAllBtn.style.display = 'none';
+        downloadZipBtn.style.display = 'none';
         clearBtn.style.display = 'none';
         summary.classList.remove('show');
       }
@@ -539,12 +594,10 @@ async function compressImage(file, quality, format) {
     const url = URL.createObjectURL(file);
     img.onload = () => {
       const canvas = document.createElement('canvas');
-
-      // For PNG with high quality, maintain original dimensions
       let w = img.naturalWidth;
       let h = img.naturalHeight;
 
-      // If image is very large, scale down proportionally
+      // Scale down if very large
       const maxDim = 4096;
       if (w > maxDim || h > maxDim) {
         const ratio = Math.min(maxDim / w, maxDim / h);
@@ -554,9 +607,7 @@ async function compressImage(file, quality, format) {
 
       canvas.width = w;
       canvas.height = h;
-
       const ctx = canvas.getContext('2d');
-      // White background for JPEG (no alpha)
       if (format === 'image/jpeg') {
         ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, w, h);
@@ -576,7 +627,6 @@ compressBtn.addEventListener('click', async () => {
   const quality = +qualitySlider.value;
   compressBtn.disabled = true;
   compressBtn.textContent = '⏳ 压缩中...';
-  compressedFiles = [];
 
   for (let i = 0; i < files.length; i++) {
     const item = files[i];
@@ -593,14 +643,12 @@ compressBtn.addEventListener('click', async () => {
     item.saving = ((1 - blob.size / item.file.size) * 100);
     item.compressedBlob = blob;
     item.outputFormat = fmt;
-
-    compressedFiles.push(blob);
     renderFileList();
   }
 
   compressBtn.disabled = false;
   compressBtn.textContent = '⚡ 重新压缩';
-  downloadAllBtn.style.display = 'flex';
+  downloadZipBtn.style.display = 'flex';
   clearBtn.style.display = 'flex';
 
   // Summary
@@ -619,26 +667,52 @@ function downloadFile(idx) {
   const item = files[idx];
   if (!item.compressedBlob) return;
   const a = document.createElement('a');
-  const name = item.file.name.replace(/\.[^.]+$/, '') + '_compressed' + getExt(item.outputFormat);
   a.href = URL.createObjectURL(item.compressedBlob);
-  a.download = name;
+  a.download = getCompressedName(item);
   a.click();
   URL.revokeObjectURL(a.href);
 }
 
-downloadAllBtn.addEventListener('click', () => {
-  files.forEach((_, i) => {
-    setTimeout(() => downloadFile(i), i * 200);
-  });
+// ZIP batch download
+downloadZipBtn.addEventListener('click', async () => {
+  const compressedItems = files.filter(f => f.compressed && f.compressedBlob);
+  if (compressedItems.length === 0) return;
+
+  downloadZipBtn.disabled = true;
+  downloadZipBtn.textContent = '📦 打包中...';
+
+  const zip = new JSZip();
+  const nameCount = {};
+
+  for (const item of compressedItems) {
+    let name = getCompressedName(item);
+    // Deduplicate filenames
+    if (nameCount[name]) {
+      nameCount[name]++;
+      name = name.replace(/(\.[^.]+)$/, `_${nameCount[name]}$1`);
+    } else {
+      nameCount[name] = 1;
+    }
+    zip.file(name, item.compressedBlob);
+  }
+
+  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 1 } });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'compressed_images.zip';
+  a.click();
+  URL.revokeObjectURL(a.href);
+
+  downloadZipBtn.disabled = false;
+  downloadZipBtn.textContent = '📦 打包下载 ZIP';
 });
 
 clearBtn.addEventListener('click', () => {
   files = [];
-  compressedFiles = [];
   fileList.innerHTML = '';
   compressBtn.disabled = true;
   compressBtn.textContent = '⚡ 开始压缩';
-  downloadAllBtn.style.display = 'none';
+  downloadZipBtn.style.display = 'none';
   clearBtn.style.display = 'none';
   summary.classList.remove('show');
 });
